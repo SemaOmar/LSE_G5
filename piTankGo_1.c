@@ -79,11 +79,22 @@ PI_THREAD (thread_explora_teclado_PC) {
 				case 's':
 					// A completar por el alumno...
 					// ...
+					
+					/*
+						DUDA JOSE -> No se muy bien como funcionan las interrupciones, supongo que este hilo se encarga 
+						de monitorizar el teclado y activa un flag si detecata que se ha pulsado una tecla
+
+						Por ahora dos interrupciones:
+							Tecla S -> start -> inicia las maquinas de estado
+							Tecla Q -> quit  -> Finaliza mauqinas de estado, termina el programa
+					*/
 					printf("Tecla S pulsada!\n");
+					flags_system |= FLAG_SYSTEM_START;
 					fflush(stdout);
 					break;
 
 				case 'q':
+					flags_system |= FLAG_SYSTEM_END;
 					exit(0);
 					break;
 
