@@ -19,6 +19,14 @@ int CompruebaComienzo (fsm_t* this) {
 
 	// A completar por el alumno
 	// ...
+	
+	/*
+		Si se aprieta cualquir boton, que empice a funcionar la torreta
+	*/
+	if (FLAG_SYSTEM_START){
+		printf (stdout, "Recibida senal START"); 
+		result = 1;
+	}
 
 	return result;
 }
@@ -28,6 +36,11 @@ int CompruebaJoystickUp (fsm_t* this) {
 
 	// A completar por el alumno
 	// ...
+	
+	if (FLAG_JOYSTICK_UP){
+		printf (stdout, "Joystick -> UP");
+		result = 1;
+	}
 
 	return result;
 }
@@ -37,6 +50,11 @@ int CompruebaJoystickDown (fsm_t* fsm_player){
 
 	// A completar por el alumno
 	// ...
+	
+	if (FLAG_JOYSTICK_DOWN){
+		printf (stdout, "Joystick -> Down");
+		result = 1;
+	}
 
 	return result;
 }
@@ -46,6 +64,11 @@ int CompruebaJoystickLeft (fsm_t* this) {
 
 	// A completar por el alumno
 	// ...
+	
+	if (FLAG_JOYSTICK_LEFT){
+		printf (stdout, "Joystick -> Left");
+		result = 1;
+	}
 
 	return result;
 }
@@ -55,6 +78,11 @@ int CompruebaJoystickRight (fsm_t* this) {
 
 	// A completar por el alumno
 	// ...
+	
+	if (FLAG_JOYSTICK_RIGHT){
+		printf (stdout, "Joystick -> Right");
+		result = 1;
+	}
 
 	return result;
 }
@@ -64,6 +92,11 @@ int CompruebaTimeoutDisparo (fsm_t* this) {
 
 	// A completar por el alumno
 	// ...
+	
+	if (FLAG_SHOOT_TIMEOUT){
+		printf (stdout, "Timeout -> Disparo");
+		result = 1;
+	}
 
 	return result;
 }
