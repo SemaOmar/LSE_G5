@@ -81,11 +81,22 @@ PI_THREAD (thread_explora_teclado_PC) {
 				case 's':
 					// A completar por el alumno...
 					// ...
+					
+					/*
+						DUDA JOSE -> No se muy bien como funcionan las interrupciones, supongo que este hilo se encarga 
+						de monitorizar el teclado y activa un flag si detecata que se ha pulsado una tecla
+
+						Por ahora dos interrupciones:
+							Tecla S -> start -> inicia las maquinas de estado
+							Tecla Q -> quit  -> Finaliza mauqinas de estado, termina el programa
+					*/
 					printf("Tecla S pulsada!\n");
+					flags_system |= FLAG_SYSTEM_START;
 					fflush(stdout);
 					break;
 
 				case 'q':
+					flags_system |= FLAG_SYSTEM_END;
 					exit(0);
 					break;
 
@@ -150,12 +161,33 @@ int main ()
 
 	fsm_t* player_fsm = fsm_new (WAIT_START, control_torreta, &(sistema.torreta));
 	// ...
+	
+	fsm_trans_t torreta[] = {
+		{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
+		{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
+		{ WAIT_MOVE, CompruebaJoystickRight, JOYSTICK_RIGHT, MueveTorretaDerecha },
+		{ WAIT_MOVE, CompruebaJoystickDown, JOYSTICK_DOWN, MueveTorretaAbajo },
+		{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
+		{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },
+		{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
+		{ JOYSTICK_UP, 1, WAIT_MOVE, NULL },
+		{ JOYSTICK_RIGHT, 1, WAIT_MOVE, NULL },
+		{ JOYSTICK_DOWN, 1, WAIT_MOVE, NULL },
+		{ JOYSTICK_LEFT, 1, WAIT_MOVE, NULL },
+		{ TRIGGER_BUTTON, CompruebaImpacto, WAIT_MOVE, ImpactoDetectado },
+		{ TRIGGER_BUTTON, CompruebaTimeOutDisparo, WAIT_MOVE, FinalDisparoIR },
+		{-1, NULL, -1, NULL },
+	};
+	
+	fsm_t* torreta_fsm = fsm_new (WAIT_START, torreta, &(sistema.torreta));
 
 	next = millis();
 	while (1) {
 		fsm_fire (player_fsm);
 		// A completar por el alumno...
 		// ...
+		
+		fsm_fire (torreta_fsm);
 
 		next += CLK_MS;
 		delay_until (next);
