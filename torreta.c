@@ -7,6 +7,14 @@
 
 void InicializaTorreta (TipoTorreta *p_torreta) {
 	// A completar por el alumno...
+	wiringPiSetupGpio();
+	pinMode (19, PWM_OUTPUT);
+	pwmSetMode(PWM_MODE_MS);
+	pwmSetRange(2000);// 2000* 10 us (20ms) periodo de la pwm
+	pwmSetClock (192);
+	pwmWrite(19,150);//cambia el ciclo de la pwm
+	delay(10000);
+	pwmWrite(19,200);
 	// ...
 }
 
@@ -16,7 +24,6 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
-
 	// A completar por el alumno
 	// ...
 
