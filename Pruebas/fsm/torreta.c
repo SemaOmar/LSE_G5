@@ -13,7 +13,7 @@
 //SERVOMOTOR
 #define INC 10			//Incremento cada vez que se pulsa una tecla
 #define P_MAX 200	//Pulso maximo 2ms -> p_max=RANGO*2/T=200 -> Torreta en 180º
-#define P_MIN 0		//Sin pulso, PWM off -> Torreta en 0º
+#define P_MIN 120	//Sin pulso, PWM off -> Torreta en 0º   CUIDADO QUE TOQUE!!!!!!! ERA 100 !!!!!!!!!!!!!!!!!!!!!
 
 //------------------------------------------------------
 // PROCEDIMIENTOS DE INICIALIZACION DE LOS OBJETOS ESPECIFICOS
@@ -27,7 +27,7 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 		Establece la posicion inicial de la torreta
 	*/
 	
-	int pulso = P_MAX/2; // Posicion inicial 90º
+	int pulso = (P_MAX-P_MIN)/2+P_MIN; // Posicion inicial 90º
 	wiringPiSetupGpio();
 	pinMode (GPIO19, PWM_OUTPUT);
 	pwmSetMode(PWM_MODE_MS);
@@ -51,16 +51,17 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
-
+	int ope=0;
 	// A completar por el alumno
 	// ...
-	
-	if (flags_juego == FLAG_SYSTEM_START){
-		fprintf (stdout, "Recibida senal START"); 
-		flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
+	printf( "entra a compruebo. Flag: %x \n",flags_juego );
+	ope = (flags_juego & FLAG_SYSTEM_START);
+	printf( "Ope. %x \n",ope );
+	if (ope==FLAG_SYSTEM_START){
+		printf ("Recibida senal START");
 		result = 1;
 	}
-
+	printf( "salgo de compruebo. Flag: %x \n",flags_juego );
 	return result;
 }
 
@@ -73,8 +74,8 @@ int CompruebaJoystickUp (fsm_t* this) {
 	
 	// A completar por el alumno
 	// ...
-	
-	if (flags_juego == FLAG_JOYSTICK_UP){
+	printf( "entra a muevo UP. Flags %x: \n", flags_juego); 
+	if ((flags_juego & FLAG_JOYSTICK_UP)==FLAG_JOYSTICK_UP){
 		fprintf (stdout, "Joystick -> UP");
 		result = 1;
 	}
@@ -88,7 +89,7 @@ int CompruebaFinalJuego (fsm_t* this) {
 	// A completar por el alumno
 	// ...
 	
-	if (flags_juego == FLAG_SYSTEM_END){
+	if (flags_juego & FLAG_SYSTEM_END){
 		fprintf (stdout, "Recibida senal END");
 		flags_juego &= ~FLAG_SYSTEM_END;
 		result = 1;
@@ -110,6 +111,8 @@ void ComienzaSistema (fsm_t* this) {
 	fprintf (stdout, "Iniciando Torreta...");
 	InicializaTorreta(torreta);
 	fprintf (stdout, "Torreta operativa");
+
+	flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
 	
 }
 
@@ -123,6 +126,8 @@ void MueveTorretaArriba (fsm_t* this) {
 	torreta->posicion.x += torreta->servo_x.incremento;
 	pwmWrite(GPIO19, torreta->posicion.x);
 	
+	flags_juego &= ~FLAG_JOYSTICK_UP;
+	
 }
 
 void FinalizaJuego (fsm_t* this) {
@@ -132,6 +137,8 @@ void FinalizaJuego (fsm_t* this) {
 	fprintf (stdout, "Desactivando Torreta...");
 	//Aqui podriamos hacer que la torreta mire al suelo
 	fprintf (stdout, "Torreta OFF");
+
+	flags_juego &= ~FLAG_SYSTEM_END;
 }
 
 //------------------------------------------------------

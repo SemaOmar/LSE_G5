@@ -3,6 +3,7 @@
 
 int flags_juego = 0;
 int flags_player = 0;
+int flags_system = 0;
 
 //------------------------------------------------------
 // FUNCIONES DE CONFIGURACION/INICIALIZACION
@@ -77,13 +78,16 @@ PI_THREAD (thread_explora_teclado_PC) {
 					printf("Tecla S pulsada!\n");
 					flags_system |= FLAG_SYSTEM_START;
 					flags_juego |= FLAG_SYSTEM_START;
+					printf("Flag juego %x\n", flags_juego);			
+
 					fflush(stdout);
 					break;
 					
 					
 				case 'w': // simular Joystick con teclado hasta tener hecha esa parte para comprobar el funcionamiento de la FSM
 					printf("Tecla UP pulsada!\n");
-					flags_system |= FLAG_JOYSTICK_UP;
+					flags_juego |= FLAG_JOYSTICK_UP;
+					printf("Flag juego %x\n", flags_juego);
 					fflush(stdout);
 					break;
 
@@ -133,7 +137,7 @@ int main ()
 		{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
 		{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },*/
 		{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
-		{ JOYSTICK_UP, CompruebaJoystickUp, WAIT_MOVE, NULL },
+		{ JOYSTICK_UP, NULL, WAIT_MOVE, NULL },
 		/*{ JOYSTICK_RIGHT, 1, WAIT_MOVE, NULL },
 		{ JOYSTICK_DOWN, 1, WAIT_MOVE, NULL },
 		{ JOYSTICK_LEFT, 1, WAIT_MOVE, NULL },
