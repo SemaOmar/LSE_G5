@@ -14,34 +14,34 @@
 
 #include "piTankGoLib.h"
 
-#define MAX_NUM_NOTAS 		2000
-#define MAX_NUM_CHAR_NOMBRE	100
+#define MAX_NUM_NOTAS       2000
+#define MAX_NUM_CHAR_NOMBRE 100
 
 typedef struct {
-	char nombre[MAX_NUM_CHAR_NOMBRE]; // String con el nombre del efecto
-	int frecuencias[MAX_NUM_NOTAS]; // Array con las frecuencias de las notas del efecto
-	int duraciones[MAX_NUM_NOTAS]; // Array con las duraciones de las notas del efecto
-	int num_notas; // Numero de notas de que consta el efecto
+    char nombre[MAX_NUM_CHAR_NOMBRE]; // String con el nombre del efecto
+    int frecuencias[MAX_NUM_NOTAS]; // Array con las frecuencias de las notas del efecto
+    int duraciones[MAX_NUM_NOTAS]; // Array con las duraciones de las notas del efecto
+    int num_notas; // Numero de notas de que consta el efecto
 } TipoEfecto;
 
 typedef struct {
-	int posicion_nota_actual;	// Valor correspondiente a la posicion de la nota actual en los arrays de frecuencias y duraciones
-	int frecuencia_nota_actual; // Valor correspondiente a la frecuencia de la nota actual
-	int duracion_nota_actual; // Valor correspondiente a la duracion de la nota actual
+    int posicion_nota_actual;   // Valor correspondiente a la posicion de la nota actual en los arrays de frecuencias y duraciones
+    int frecuencia_nota_actual; // Valor correspondiente a la frecuencia de la nota actual
+    int duracion_nota_actual; // Valor correspondiente a la duracion de la nota actual
 
-	TipoEfecto* p_efecto; // Variable tipo puntero que apunta al efecto en particular que se quiere reproducir
+    TipoEfecto* p_efecto; // Variable tipo puntero que apunta al efecto en particular que se quiere reproducir
 
-	TipoEfecto efecto_disparo; // Efecto de disparo
-	TipoEfecto efecto_impacto; // Efecto de impacto
+    TipoEfecto efecto_disparo; // Efecto de disparo
+    TipoEfecto efecto_impacto; // Efecto de impacto
 
-	// A completar por el alumno (declaracion del temporizador para control duracion notas)
-	// ...
+    // A completar por el alumno (declaracion del temporizador para control duracion notas)
+    // ...
 } TipoPlayer;
 
 extern int flags_player;
 
 // Prototipos de procedimientos de inicializacion de los objetos especificos
-int InicializaEfecto (TipoEfecto *p_efecto, char *nombre, int *array_frecuencias, int *array_duraciones, int num_notas);
+void InicializaEfecto (TipoEfecto *p_efecto, char *nombre, int *array_frecuencias, int *array_duraciones, int num_notas);
 void InicializaPlayer (TipoPlayer *p_player);
 
 // Prototipos de funciones de entrada
