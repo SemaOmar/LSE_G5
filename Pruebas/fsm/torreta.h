@@ -50,6 +50,7 @@ int CompruebaTimeoutDisparo (fsm_t* this);
 int CompruebaImpacto (fsm_t* this);
 int CompruebaTriggerButton (fsm_t* this);
 int CompruebaFinalJuego (fsm_t* this);
+int NoComprueboNada (fsm_t* this) ;
 
 // Prototipos de funciones de salida
 void ComienzaSistema (fsm_t* this);
@@ -61,6 +62,7 @@ void DisparoIR (fsm_t* this);
 void FinalDisparoIR (fsm_t* this);
 void ImpactoDetectado (fsm_t* this);
 void FinalizaJuego (fsm_t* this);
+void NoHagoNada (fsm_t* this) ;
 
 // Prototipos de procedimientos de atencion a las interrupciones
 void timer_duracion_disparo_isr (union sigval value);

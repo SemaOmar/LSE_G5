@@ -76,7 +76,7 @@ PI_THREAD (thread_explora_teclado_PC) {
 							Tecla Q -> quit  -> Finaliza mauqinas de estado, termina el programa
 					*/
 					printf("Tecla S pulsada!\n");
-					flags_system |= FLAG_SYSTEM_START;
+					flags_system = FLAG_SYSTEM_START; //Borramos los flags que puedieran estar activos antes de iniciar el sistema
 					flags_juego |= FLAG_SYSTEM_START;
 					printf("Flag juego %x\n", flags_juego);			
 
@@ -137,7 +137,7 @@ int main ()
 		{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
 		{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },*/
 		{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
-		{ JOYSTICK_UP, NULL, WAIT_MOVE, NULL },
+		{ JOYSTICK_UP, NoComprueboNada, WAIT_MOVE, NoHagoNada },
 		/*{ JOYSTICK_RIGHT, 1, WAIT_MOVE, NULL },
 		{ JOYSTICK_DOWN, 1, WAIT_MOVE, NULL },
 		{ JOYSTICK_LEFT, 1, WAIT_MOVE, NULL },

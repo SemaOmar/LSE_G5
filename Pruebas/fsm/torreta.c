@@ -8,12 +8,13 @@
 #define T 20					// T=20ms -> f=50Hz
 
 //Pin GPIO salida PWM
+#define GPIO18 18
 #define GPIO19 19
 
 //SERVOMOTOR
 #define INC 10			//Incremento cada vez que se pulsa una tecla
-#define P_MAX 200	//Pulso maximo 2ms -> p_max=RANGO*2/T=200 -> Torreta en 180º
-#define P_MIN 120	//Sin pulso, PWM off -> Torreta en 0º   CUIDADO QUE TOQUE!!!!!!! ERA 100 !!!!!!!!!!!!!!!!!!!!!
+#define P_MAX 200	//Pulso maximo 2ms -> p_max=RANGO*2/T=200 -> Torreta en 180º -> Podemos usar 100 intervalos del total de RANGO
+#define P_MIN 100	//Sin pulso, PWM off -> Torreta en 0º
 
 //------------------------------------------------------
 // PROCEDIMIENTOS DE INICIALIZACION DE LOS OBJETOS ESPECIFICOS
@@ -27,14 +28,17 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 		Establece la posicion inicial de la torreta
 	*/
 	
-	int pulso = (P_MAX-P_MIN)/2+P_MIN; // Posicion inicial 90º
+	int x_ini = (P_MAX-P_MIN)/2+P_MIN; // Posicion inicial en el punto medio -> 90º
+	
+	wiringPiSetup ();
 	wiringPiSetupGpio();
-	pinMode (GPIO19, PWM_OUTPUT);
+	
+	pinMode (GPIO18, PWM_OUTPUT);
 	pwmSetMode(PWM_MODE_MS);
-	pwmSetRange(RANGO);
+	//pwmSetRange(RANGO);
 	pwmSetClock (DIVISOR);
 	
-	p_torreta->posicion.x = pulso;
+	p_torreta->posicion.x = x_ini;
 	p_torreta->posicion.y = 0;
 	p_torreta->servo_x.inicio = 0;
 	p_torreta->servo_x.incremento = 10;
@@ -51,17 +55,17 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
-	int ope=0;
+	
 	// A completar por el alumno
 	// ...
-	printf( "entra a compruebo. Flag: %x \n",flags_juego );
-	ope = (flags_juego & FLAG_SYSTEM_START);
-	printf( "Ope. %x \n",ope );
-	if (ope==FLAG_SYSTEM_START){
-		printf ("Recibida senal START");
+	
+	fprintf (stdout,"ESTADO --> START\n");
+	
+	if ((flags_juego & FLAG_SYSTEM_START)==FLAG_SYSTEM_START){
+		printf ("Recibida senal START\n");
 		result = 1;
 	}
-	printf( "salgo de compruebo. Flag: %x \n",flags_juego );
+	
 	return result;
 }
 
@@ -74,9 +78,11 @@ int CompruebaJoystickUp (fsm_t* this) {
 	
 	// A completar por el alumno
 	// ...
-	printf( "entra a muevo UP. Flags %x: \n", flags_juego); 
+	
+	fprintf (stdout,"ESTADO --> WAIT\n");
+	
 	if ((flags_juego & FLAG_JOYSTICK_UP)==FLAG_JOYSTICK_UP){
-		fprintf (stdout, "Joystick -> UP");
+		fprintf (stdout, "Joystick -> UP\n");
 		result = 1;
 	}
 
@@ -89,13 +95,18 @@ int CompruebaFinalJuego (fsm_t* this) {
 	// A completar por el alumno
 	// ...
 	
-	if (flags_juego & FLAG_SYSTEM_END){
-		fprintf (stdout, "Recibida senal END");
+	if ((flags_juego & FLAG_SYSTEM_END)==FLAG_SYSTEM_END){
+		fprintf (stdout, "Recibida senal END\n");
 		flags_juego &= ~FLAG_SYSTEM_END;
 		result = 1;
 	}
 
 	return result;
+}
+
+int NoComprueboNada (fsm_t* this) {
+	fprintf (stdout, "\t\tNo compruebo nada\n");
+	return 1;
 }
 
 //------------------------------------------------------
@@ -108,11 +119,38 @@ void ComienzaSistema (fsm_t* this) {
 	
 	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
 	
-	fprintf (stdout, "Iniciando Torreta...");
-	InicializaTorreta(torreta);
-	fprintf (stdout, "Torreta operativa");
-
+	fprintf (stdout, "\t\tSTART --> WAIT\n");
+	fprintf (stdout, "Iniciando Torreta...\n");
+	//InicializaTorreta(torreta);
+	
+	// Hago lo mismo que la funcion InicializaTorreta para depurar --> BORRAR AL TERMINAR
+	//
+	// Esta es la seccion critica
+	//		-> Si la quito, funciona la FSM
+	//		-> Si la pongo, parece que todo se ejecuta correctamente y la PWM se configura, pero la FSM se queda bloqueada
+	
+				int x_ini = (P_MAX-P_MIN)/2+P_MIN; // Posicion inicial en el punto medio -> 90º
+				
+				//wiringPiSetup ();
+				wiringPiSetupGpio(); fprintf (stdout, "WiringPi configurada\n");
+				pinMode (GPIO19, PWM_OUTPUT); fprintf (stdout, "PWM GPIO19\n");
+				pwmSetMode(PWM_MODE_MS); fprintf (stdout, "PWM PWM_MODE_MS\n");
+				//pwmSetRange(RANGO); fprintf (stdout, "PWM RANGO\n");
+				//pwmSetClock (DIVISOR); fprintf (stdout, "PWM DIVISOR\n");
+				
+				torreta->posicion.x = x_ini;
+				torreta->posicion.y = 0;
+				torreta->servo_x.inicio = 0;
+				torreta->servo_x.incremento = 10;
+				torreta->servo_x.minimo = P_MIN;
+				torreta->servo_x.maximo = P_MAX;
+				
+				pwmWrite(GPIO19, torreta->posicion.x);  fprintf (stdout, "PWM Write\n");
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
+	fprintf (stdout, "Torreta operativa\n");
 	
 }
 
@@ -120,11 +158,17 @@ void MueveTorretaArriba (fsm_t* this) {
 	// A completar por el alumno
 	// ...
 	
+	int x_next=0;
 	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
 	
-	fprintf (stdout, "Accion -> Torreta UP");
-	torreta->posicion.x += torreta->servo_x.incremento;
-	pwmWrite(GPIO19, torreta->posicion.x);
+	fprintf (stdout, "\t\tWAIT --> UP\n");
+	fprintf (stdout, "Accion -> Torreta UP\n");
+	
+	x_next = torreta->posicion.x + torreta->servo_x.incremento;
+	if (x_next <= torreta->servo_x.maximo) {
+		torreta->posicion.x = x_next;
+		pwmWrite(GPIO19, torreta->posicion.x);
+	}
 	
 	flags_juego &= ~FLAG_JOYSTICK_UP;
 	
@@ -134,11 +178,15 @@ void FinalizaJuego (fsm_t* this) {
 	// A completar por el alumno
 	// ...
 	
-	fprintf (stdout, "Desactivando Torreta...");
+	fprintf (stdout, "Desactivando Torreta...\n");
 	//Aqui podriamos hacer que la torreta mire al suelo
-	fprintf (stdout, "Torreta OFF");
+	fprintf (stdout, "Torreta OFF\n");
 
 	flags_juego &= ~FLAG_SYSTEM_END;
+}
+
+void NoHagoNada (fsm_t* this) {
+	fprintf (stdout, "\t\tNo hago nada\n");
 }
 
 //------------------------------------------------------
