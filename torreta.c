@@ -80,6 +80,45 @@ int CompruebaJoystickUp (fsm_t* this) {
 	return result;
 }
 
+int CompruebaJoystickDown (fsm_t* this) {
+	int result = 0;
+
+	fprintf (stdout,"ESTADO --> WAIT\n");
+
+	if (flags_juego & FLAG_JOYSTICK_DOWN){
+		fprintf (stdout, "Joystick -> DOWN\n");
+		result = 1;
+	}
+
+	return result;
+}
+
+int CompruebaJoystickLeft (fsm_t* this) {
+	int result = 0;
+
+	fprintf (stdout,"ESTADO --> WAIT\n");
+
+	if (flags_juego & FLAG_JOYSTICK_LEFT){
+		fprintf (stdout, "Joystick -> LEFT\n");
+		result = 1;
+	}
+
+	return result;
+}
+
+int CompruebaJoystickRight (fsm_t* this) {
+	int result = 0;
+
+	fprintf (stdout,"ESTADO --> WAIT\n");
+
+	if (flags_juego & FLAG_JOYSTICK_RIGHT){
+		fprintf (stdout, "Joystick -> RIGHT\n");
+		result = 1;
+	}
+
+	return result;
+}
+
 int CompruebaFinalJuego (fsm_t* this) {
 	int result = 0;
 

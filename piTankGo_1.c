@@ -19,7 +19,7 @@ int tiemposImpacto[32] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
 
 int flags_juego = 0;
 int flags_player = 0;
-
+int flags_system = 0;
 //------------------------------------------------------
 // FUNCIONES DE CONFIGURACION/INICIALIZACION
 //------------------------------------------------------
@@ -45,12 +45,13 @@ int ConfiguraSistema (TipoSistema *p_sistema) {
 // igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) {
 
-	int result = 0, pid_joystick = 0;
+	int result = 0;
+	int pid_joystick = 0;
 	wiringPiSetupGpio();
-	system();
 	// Lanzamos thread para exploracion del teclado convencional del PC
 	result = piThreadCreate (thread_explora_teclado_PC);
 	pid_joystick = piThreadCreate (thread_explora_joystick);
+
 	if (result != 0) {
 		printf ("Thread didn't start!!!\n");
 		return -1;
@@ -58,7 +59,7 @@ int InicializaSistema (TipoSistema *p_sistema) {
 	if (pid_joystick != 0) {
 		printf ("Thread didn't start!!!\n");
 		return -1;
-		}
+	}
 
 	return result;
 }
@@ -127,15 +128,15 @@ PI_THREAT (thread_explora_joystick){
 	if((bytesread = read( fd, arr1, MAX_BUF - 1)) > 0)
 	{
 		piLock (PLAYER_FLAGS_KEY);
+
 		arr1[bytesread] = '\0';
 		if (strcmp(arr1 , "up") == 0) {	flags_system |= FLAG_JOYSTICK_UP;}
 		if (strcmp(arr1 , "down") == 0) { flags_system |= FLAG_JOYSTICK_DOWN;}
 		if (strcmp(arr1 , "right") == 0) { flags_system |= FLAG_JOYSTICK_RIGHT;}
 		if (strcmp(arr1 , "left") == 0) { flags_system |= FLAG_JOYSTICK_LEFT;}
 		if (strcmp(arr1 , "middle") == 0) { flags_system |= FLAG_TRIGGER_BUTTON;}
-		piUnlock (PLAYER_FLAGS_KEY);
-	}
 
+		piUnlock (PLAYER_FLAGS_KEY);
 	}
 	close(fd);
 	}
@@ -159,7 +160,7 @@ int main ()
 
 	InicializaSistema (&sistema);
 
-	fsm_trans_t reproductor[] = {
+	/*fsm_trans_t reproductor[] = {
 		{ WAIT_START, CompruebaStartDisparo, WAIT_NEXT, InicializaPlayDisparo },
 		{ WAIT_START, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
 		{ WAIT_NEXT, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
@@ -167,11 +168,28 @@ int main ()
 		{ WAIT_END, CompruebaFinalEfecto, WAIT_START, FinalEfecto },
 		{ WAIT_END, CompruebaNuevaNota, WAIT_NEXT, ComienzaNuevaNota},
 		{-1, NULL, -1, NULL },
-	};
+	};*/
 
-	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
+	//fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
 
-	fsm_trans_t control_torreta [] = {
+	fsm_trans_t torreta[] = {
+			{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
+			{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
+			{ WAIT_MOVE, CompruebaJoystickRight, JOYSTICK_RIGHT, MueveTorretaDerecha }, // estados aun no implementados
+			{ WAIT_MOVE, CompruebaJoystickDown, JOYSTICK_DOWN, MueveTorretaAbajo },
+			{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
+			/*{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },*/
+			{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
+			{ JOYSTICK_UP, NoComprueboNada, WAIT_MOVE, NoHagoNada },
+			{ JOYSTICK_RIGHT, NoComprueboNada, WAIT_MOVE, NoHagoNada },
+			{ JOYSTICK_DOWN, NoComprueboNada, WAIT_MOVE, NoHagoNada },
+			{ JOYSTICK_LEFT, NoComprueboNada, WAIT_MOVE, NoHagoNada },
+			/*{ TRIGGER_BUTTON, CompruebaImpacto, WAIT_MOVE, ImpactoDetectado },
+			{ TRIGGER_BUTTON, CompruebaTimeOutDisparo, WAIT_MOVE, FinalDisparoIR },*/
+			{-1, NULL, -1, NULL },
+		};
+
+/*	fsm_trans_t control_torreta [] = {
 			{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
 			{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
 			{ JOYSTICK_UP, 1, WAIT_MOVE, NULL },
@@ -186,9 +204,9 @@ int main ()
 			{ TRIGGER_BUTTON, CompruebaTimeoutDisparo, WAIT_MOVE, FinalDisparoIR },
 			{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
 			{-1, NULL, -1, NULL },
-		};
+		};*/
 
-	fsm_t* torreta_fsm = fsm_new (WAIT_START, control_torreta, &(sistema.torreta));
+	fsm_t* torreta_fsm = fsm_new (WAIT_START, torreta, &(sistema.torreta));
 
 	next = millis();
 
