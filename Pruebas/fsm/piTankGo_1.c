@@ -30,7 +30,7 @@ int ConfiguraSistema (TipoSistema *p_sistema) {
 // igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) {
 	int result = 0;
-
+	wiringPiSetupGpio();
 	// A completar por el alumno...
 	// ...
 
