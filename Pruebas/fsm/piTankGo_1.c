@@ -83,6 +83,13 @@ PI_THREAD (thread_explora_teclado_PC) {
 					fflush(stdout);
 					break;
 					
+				case 'q':
+					printf("Tecla Q pulsada!\n");
+					flags_system |= FLAG_SYSTEM_END;
+					flags_juego = FLAG_SYSTEM_END;
+					exit(0);
+					break;
+					
 					
 				case 'w': // simular Joystick con teclado hasta tener hecha esa parte para comprobar el funcionamiento de la FSM
 					printf("Tecla UP pulsada!\n");
@@ -90,11 +97,26 @@ PI_THREAD (thread_explora_teclado_PC) {
 					printf("Flag juego %x\n", flags_juego);
 					fflush(stdout);
 					break;
-
-				case 'q':
-					flags_system |= FLAG_SYSTEM_END;
-					flags_juego |= FLAG_SYSTEM_END;
-					exit(0);
+					
+				case 'z': // simular Joystick con teclado hasta tener hecha esa parte para comprobar el funcionamiento de la FSM
+					printf("Tecla UP pulsada!\n");
+					flags_juego |= FLAG_JOYSTICK_DOWN;
+					printf("Flag juego %x\n", flags_juego);
+					fflush(stdout);
+					break;
+					
+				case 'a': // simular Joystick con teclado hasta tener hecha esa parte para comprobar el funcionamiento de la FSM
+					printf("Tecla UP pulsada!\n");
+					flags_juego |= FLAG_JOYSTICK_LEFT;
+					printf("Flag juego %x\n", flags_juego);
+					fflush(stdout);
+					break;
+					
+				case 'd': // simular Joystick con teclado hasta tener hecha esa parte para comprobar el funcionamiento de la FSM
+					printf("Tecla UP pulsada!\n");
+					flags_juego |= FLAG_JOYSTICK_RIGHT;
+					printf("Flag juego %x\n", flags_juego);
+					fflush(stdout);
 					break;
 
 				default:
@@ -132,16 +154,16 @@ int main ()
 	fsm_trans_t torreta[] = {
 		{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
 		{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
-		/*{ WAIT_MOVE, CompruebaJoystickRight, JOYSTICK_RIGHT, MueveTorretaDerecha }, // estados aun no implementados
+		{ WAIT_MOVE, CompruebaJoystickRight, JOYSTICK_RIGHT, MueveTorretaDerecha }, // estados aun no implementados
 		{ WAIT_MOVE, CompruebaJoystickDown, JOYSTICK_DOWN, MueveTorretaAbajo },
 		{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
-		{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },*/
+		/*{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },*/
 		{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
 		{ JOYSTICK_UP, NoComprueboNada, WAIT_MOVE, NoHagoNada },
-		/*{ JOYSTICK_RIGHT, 1, WAIT_MOVE, NULL },
-		{ JOYSTICK_DOWN, 1, WAIT_MOVE, NULL },
-		{ JOYSTICK_LEFT, 1, WAIT_MOVE, NULL },
-		{ TRIGGER_BUTTON, CompruebaImpacto, WAIT_MOVE, ImpactoDetectado },
+		{ JOYSTICK_RIGHT, NoComprueboNada, WAIT_MOVE, NoHagoNada },
+		{ JOYSTICK_DOWN, NoComprueboNada, WAIT_MOVE, NoHagoNada },
+		{ JOYSTICK_LEFT, NoComprueboNada, WAIT_MOVE, NoHagoNada },
+		/*{ TRIGGER_BUTTON, CompruebaImpacto, WAIT_MOVE, ImpactoDetectado },
 		{ TRIGGER_BUTTON, CompruebaTimeOutDisparo, WAIT_MOVE, FinalDisparoIR },*/
 		{-1, NULL, -1, NULL },
 	};

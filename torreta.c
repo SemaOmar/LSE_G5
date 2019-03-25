@@ -105,7 +105,7 @@ void ComienzaSistema (fsm_t* this) {
 	// ...
 	
 	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
-	
+	InicializaTorreta(torreta);
 	fprintf (stdout, "Iniciando Torreta...\n");
 	flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
 	fprintf (stdout, "Torreta operativa\n");

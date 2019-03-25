@@ -80,6 +80,45 @@ int CompruebaJoystickUp (fsm_t* this) {
 	return result;
 }
 
+int CompruebaJoystickDown (fsm_t* this) {
+	int result = 0;
+	
+	fprintf (stdout,"ESTADO --> WAIT\n");
+	
+	if (flags_juego & FLAG_JOYSTICK_DOWN){
+		fprintf (stdout, "Joystick -> DOWN\n");
+		result = 1;
+	}
+
+	return result;
+}
+
+int CompruebaJoystickLeft (fsm_t* this) {
+	int result = 0;
+	
+	fprintf (stdout,"ESTADO --> WAIT\n");
+	
+	if (flags_juego & FLAG_JOYSTICK_LEFT){
+		fprintf (stdout, "Joystick -> LEFT\n");
+		result = 1;
+	}
+
+	return result;
+}
+
+int CompruebaJoystickRight (fsm_t* this) {
+	int result = 0;
+	
+	fprintf (stdout,"ESTADO --> WAIT\n");
+	
+	if (flags_juego & FLAG_JOYSTICK_RIGHT){
+		fprintf (stdout, "Joystick -> RIGHT\n");
+		result = 1;
+	}
+
+	return result;
+}
+
 int CompruebaFinalJuego (fsm_t* this) {
 	int result = 0;
 
@@ -105,7 +144,7 @@ void ComienzaSistema (fsm_t* this) {
 	// ...
 	
 	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
-	
+	InicializaTorreta(torreta);
 	fprintf (stdout, "Iniciando Torreta...\n");
 	flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
 	fprintf (stdout, "Torreta operativa\n");
