@@ -226,6 +226,10 @@ void FinalizaJuego (fsm_t* this) {
 	// ...
 }
 
+void NoHagoNada(fsm_t* this) {
+	fprintf (stdout, "No hago nada\n");
+}
+
 //------------------------------------------------------
 // PROCEDIMIENTOS DE ATENCION A LAS INTERRUPCIONES
 //------------------------------------------------------
