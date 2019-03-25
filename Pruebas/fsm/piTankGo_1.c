@@ -77,7 +77,7 @@ PI_THREAD (thread_explora_teclado_PC) {
 					*/
 					printf("Tecla S pulsada!\n");
 					flags_system = FLAG_SYSTEM_START; //Borramos los flags que puedieran estar activos antes de iniciar el sistema
-					flags_juego |= FLAG_SYSTEM_START;
+					flags_juego = FLAG_SYSTEM_START;
 					printf("Flag juego %x\n", flags_juego);			
 
 					fflush(stdout);
