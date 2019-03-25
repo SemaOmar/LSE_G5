@@ -8,6 +8,12 @@
 #ifndef _PITANKGO_1_H_
 #define _PITANKGO_1_H_
 
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <wiringPi.h>

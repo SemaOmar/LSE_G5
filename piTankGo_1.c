@@ -44,7 +44,7 @@ int ConfiguraSistema (TipoSistema *p_sistema) {
 // la torreta, los efectos, etc.
 // igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) {
-	int result = 0;
+	int result = 0, pid_joystick = 0;
 
 	// A completar por el alumno...
 	// ...
@@ -52,11 +52,16 @@ int InicializaSistema (TipoSistema *p_sistema) {
 
 	// Lanzamos thread para exploracion del teclado convencional del PC
 	result = piThreadCreate (thread_explora_teclado_PC);
+	pid_joystick = piThreadCreate (thread_explora_joystick);
 
 	if (result != 0) {
 		printf ("Thread didn't start!!!\n");
 		return -1;
 	}
+	if (pid_joystick != 0) {
+		printf ("Thread didn't start!!!\n");
+		return -1;
+		}
 
 	return result;
 }
@@ -110,7 +115,44 @@ PI_THREAD (thread_explora_teclado_PC) {
 		piUnlock (STD_IO_BUFFER_KEY);
 	}
 }
+PI_THREAT (thread_explora_joystick){
+	while(1)
+	{
+	// Open FIFO for Read only
+	fd = open(myfifo, O_RDONLY);
+	// Read from FIFO
+	if((bytesread = read( fd, arr1, MAX_BUF - 1)) > 0)
+	{
+		arr1[bytesread] = '\0';
+		switch(arr1) {
+		case "up":
+			flags_system |= FLAG_JOYSTICK_UP;
+			printf("Received: %s", arr1);
+			fflush(stdout);
+			break;
+		case "down":
+			flags_system |= FLAG_JOYSTICK_DOWN;
+			break;
+		case "right":
+			flags_system |= FLAG_JOYSTICK_RIGHT;
+			break;
+		case "left":
+			flags_system |= FLAG_JOYSTICK_LEFT;
+			break;
+		case "middle":
+			flags_system |= FLAG_TRIGGER_BUTTON;
+			break;
 
+		default:
+			printf("INVALID KEY!!!\n");
+			break;
+	}
+
+
+	}
+	close(fd);
+	}
+}
 
 // wait until next_activation (absolute time)
 void delay_until (unsigned int next) {
