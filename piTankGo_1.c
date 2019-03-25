@@ -48,6 +48,7 @@ int InicializaSistema (TipoSistema *p_sistema) {
 
 	// A completar por el alumno...
 	// ...
+	wiringPiSetupGpio();
 
 	// Lanzamos thread para exploracion del teclado convencional del PC
 	result = piThreadCreate (thread_explora_teclado_PC);
@@ -159,31 +160,11 @@ int main ()
 			{-1, NULL, -1, NULL },
 		};
 
-	fsm_t* player_fsm = fsm_new (WAIT_START, control_torreta, &(sistema.torreta));
+	fsm_t* torreta_fsm = fsm_new (WAIT_START, control_torreta, &(sistema.torreta));
 	// ...
-	
-	fsm_trans_t torreta[] = {
-		{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
-		{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
-		{ WAIT_MOVE, CompruebaJoystickRight, JOYSTICK_RIGHT, MueveTorretaDerecha },
-		{ WAIT_MOVE, CompruebaJoystickDown, JOYSTICK_DOWN, MueveTorretaAbajo },
-		{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
-		{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },
-		{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
-		{ JOYSTICK_UP, 1, WAIT_MOVE, NULL },
-		{ JOYSTICK_RIGHT, 1, WAIT_MOVE, NULL },
-		{ JOYSTICK_DOWN, 1, WAIT_MOVE, NULL },
-		{ JOYSTICK_LEFT, 1, WAIT_MOVE, NULL },
-		{ TRIGGER_BUTTON, CompruebaImpacto, WAIT_MOVE, ImpactoDetectado },
-		{ TRIGGER_BUTTON, CompruebaTimeOutDisparo, WAIT_MOVE, FinalDisparoIR },
-		{-1, NULL, -1, NULL },
-	};
-	
-	fsm_t* torreta_fsm = fsm_new (WAIT_START, torreta, &(sistema.torreta));
-
 	next = millis();
 	while (1) {
-		fsm_fire (player_fsm);
+		//fsm_fire (player_fsm);
 		// A completar por el alumno...
 		// ...
 		

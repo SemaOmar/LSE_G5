@@ -28,18 +28,18 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 		Establece la posicion inicial de la torreta
 	*/
 	
-	int x_ini = (P_MAX-P_MIN)/2+P_MIN; // Posicion inicial en el punto medio -> 90º
+	int pos_ini = ((P_MAX-P_MIN)/2)+P_MIN; // Posicion inicial en el punto medio -> 90º
 	
 	wiringPiSetup ();
 	wiringPiSetupGpio();
 	
 	pinMode (GPIO18, PWM_OUTPUT);
 	pwmSetMode(PWM_MODE_MS);
-	//pwmSetRange(RANGO);
+	pwmSetRange(RANGO);
 	pwmSetClock (DIVISOR);
 	
-	p_torreta->posicion.x = x_ini;
-	p_torreta->posicion.y = 0;
+	p_torreta->posicion.x = pos_ini;
+	p_torreta->posicion.y = pos_ini;
 	p_torreta->servo_x.inicio = 0;
 	p_torreta->servo_x.incremento = 10;
 	p_torreta->servo_x.minimo = P_MIN;

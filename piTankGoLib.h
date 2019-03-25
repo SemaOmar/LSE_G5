@@ -33,11 +33,11 @@
 #define	TECLADO_COL_3	0
 #define	TECLADO_COL_4	0
 
-//#define JOY_PIN_UP	0
+//#define JOY_PIN_UP	    0
 //#define JOY_PIN_DOWN	0
 //#define JOY_PIN_LEFT	0
 //#define JOY_PIN_RIGHT	0
-//#define JOY_PIN_CENTER 0
+//#define JOY_PIN_CENTER  0
 
 // Distribucion de pines GPIO empleada para el enlace IR
 // ATENCION: Valores a modificar por el alumno
@@ -55,15 +55,15 @@
 
 // FLAGS FSM CONTROL DE JUEGO Y TORRETA
 // ATENCION: Valores a modificar por el alumno
-#define FLAG_SYSTEM_START 		0x00
-#define FLAG_JOYSTICK_UP 		0x00
-#define FLAG_JOYSTICK_DOWN 		0x00
-#define FLAG_JOYSTICK_LEFT		0x00
-#define FLAG_JOYSTICK_RIGHT		0x00
-#define FLAG_TRIGGER_BUTTON		0x00
-#define FLAG_SHOOT_TIMEOUT		0x00
-#define FLAG_TARGET_DONE		0x00
-#define FLAG_SYSTEM_END			0x00
+#define FLAG_SYSTEM_START 		0x01
+#define FLAG_JOYSTICK_UP 		0x02
+#define FLAG_JOYSTICK_DOWN 		0x04
+#define FLAG_JOYSTICK_LEFT		0x08
+#define FLAG_JOYSTICK_RIGHT		0x10
+#define FLAG_TRIGGER_BUTTON	    0x20
+#define FLAG_SHOOT_TIMEOUT		0x40
+#define FLAG_TARGET_DONE		0x80
+#define FLAG_SYSTEM_END			0x100
 
 // FLAGS FSM REPRODUCCION DE EFECTOS DE SONIDO
 // ATENCION: Valores a modificar por el alumno
