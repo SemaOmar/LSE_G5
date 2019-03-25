@@ -19,6 +19,9 @@ int tiemposImpacto[32] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
 
 int flags_juego = 0;
 int flags_player = 0;
+int flags_system = 0;
+
+tmr_t* timer_efecto;
 
 //------------------------------------------------------
 // FUNCIONES DE CONFIGURACION/INICIALIZACION
@@ -31,11 +34,15 @@ int flags_player = 0;
 // configurar las interrupciones periódicas y sus correspondientes temporizadores,
 // crear, si fuese necesario, los threads adicionales que pueda requerir el sistema
 int ConfiguraSistema (TipoSistema *p_sistema) {
-	int result = 0;
-	// A completar por el alumno...
-	// ...
+    int result = 0;
+    wiringPiSetup();//Inicialización de la configuración de wiringPi-completamente necesario
+    
+    softToneCreate (PLAYER_PWM_PIN);//creación del hilo para el control del sonido
+    softToneWrite(PLAYER_PWM_PIN, NO_SONAR);
 
-	return result;
+    timer_efecto = tmr_new (timer_player_duracion_nota_actual_isr);//funcion que se va a llamar cuando se produzca la interrupción
+
+    return result;
 }
 
 // int InicializaSistema (TipoSistema *p_sistema): procedimiento de inicializacion del sistema.
@@ -44,20 +51,20 @@ int ConfiguraSistema (TipoSistema *p_sistema) {
 // la torreta, los efectos, etc.
 // igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) {
-	int result = 0;
+    int result = 0;
+        
+    InicializaEfecto (&(p_sistema->player.efecto_disparo), "Disparo", frecuenciasDisparo, tiemposDisparo, sizeof(tiemposDisparo)/sizeof(tiemposDisparo[0]));//sizeof(tiemposDisparo)/sizeof(tiempoDisparo[0]---->el tamaño de memoria usado se divide entre lo que ocupa un valor de memoria
+    InicializaEfecto (&(p_sistema->player.efecto_impacto), "Impacto", frecuenciasImpacto, tiemposImpacto, sizeof(tiemposImpacto)/sizeof(tiemposImpacto[0]));
 
-	// A completar por el alumno...
-	// ...
+    // Lanzamos thread para exploracion del teclado convencional del PC
+    result = piThreadCreate (thread_explora_teclado_PC);
 
-	// Lanzamos thread para exploracion del teclado convencional del PC
-	result = piThreadCreate (thread_explora_teclado_PC);
+    if (result != 0) {
+        printf ("Thread didn't start!!!\n");
+        return -1;
+    }
 
-	if (result != 0) {
-		printf ("Thread didn't start!!!\n");
-		return -1;
-	}
-
-	return result;
+    return result;
 }
 
 //------------------------------------------------------
@@ -93,6 +100,11 @@ PI_THREAD (thread_explora_teclado_PC) {
 					printf("Tecla S pulsada!\n");
 					flags_system |= FLAG_SYSTEM_START;
 					fflush(stdout);
+					break;
+
+				case 'c':
+					flags_juego |= FLAG_TRIGGER_BUTTON;
+					printf("Fuerzo el estado de disparo!\n");
 					break;
 
 				case 'q':
@@ -139,29 +151,6 @@ int main ()
 		{-1, NULL, -1, NULL },
 	};
 
-	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
-	// A completar por el alumno...
-
-	fsm_trans_t control_torreta [] = {
-			{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
-			{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
-			{ JOYSTICK_UP, 1, WAIT_MOVE, NULL },
-			{ WAIT_MOVE, CompruebaJoystickRight, JOYSTICK_RIGHT, MueveTorretaDerecha },
-			{ JOYSTICK_RIGHT, 1, WAIT_MOVE, NULL },
-			{ WAIT_MOVE, CompruebaJoystickDown, JOYSTICK_DOWN, MueveTorretaAbajo },
-			{ JOYSTICK_DOWN, 1, WAIT_MOVE, NULL },
-			{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
-			{ JOYSTICK_LEFT, 1, WAIT_MOVE, NULL },
-			{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },
-			{ TRIGGER_BUTTON, CompruebaImpacto, WAIT_MOVE, ImpactoDetectado },
-			{ TRIGGER_BUTTON, CompruebaTimeoutDisparo, WAIT_MOVE, FinalDisparoIR },
-			{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
-			{-1, NULL, -1, NULL },
-		};
-
-	fsm_t* player_fsm = fsm_new (WAIT_START, control_torreta, &(sistema.torreta));
-	// ...
-	
 	fsm_trans_t torreta[] = {
 		{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
 		{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
@@ -178,15 +167,14 @@ int main ()
 		{ TRIGGER_BUTTON, CompruebaTimeOutDisparo, WAIT_MOVE, FinalDisparoIR },
 		{-1, NULL, -1, NULL },
 	};
-	
+
+	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
 	fsm_t* torreta_fsm = fsm_new (WAIT_START, torreta, &(sistema.torreta));
+
 
 	next = millis();
 	while (1) {
 		fsm_fire (player_fsm);
-		// A completar por el alumno...
-		// ...
-		
 		fsm_fire (torreta_fsm);
 
 		next += CLK_MS;

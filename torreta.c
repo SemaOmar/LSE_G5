@@ -42,9 +42,8 @@ int CompruebaComienzo (fsm_t* this) {
 	/*
 		Si se aprieta cualquir boton, que empice a funcionar la torreta
 	*/
-	if (flags_system == FLAG_SYSTEM_START){
+	if (flags_system & FLAG_SYSTEM_START){
 		printf (stdout, "Recibida senal START"); 
-		flags_system &= ~FLAG_SYSTEM_START //Limpiamos flag
 		result = 1;
 	}
 
@@ -142,7 +141,7 @@ int CompruebaTriggerButton (fsm_t* this) {
 	// A completar por el alumno
 	// ...
 	
-	if (flags_juego == FLAG_TRIGGER_BUTTON){
+	if (flags_juego & FLAG_TRIGGER_BUTTON){
 		printf (stdout, "Joystick -> !Fuego!");
 		result = 1;
 	}
@@ -171,8 +170,10 @@ int CompruebaFinalJuego (fsm_t* this) {
 void ComienzaSistema (fsm_t* this) {
 	// A completar por el alumno
 	// ...
-	
-	InicializaTorreta(sistema.torreta);
+	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
+	fprintf (stdout, "Iniciando Torreta...\n");
+	flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
+	fprintf (stdout, "Torreta operativa\n");
 }
 
 void MueveTorretaArriba (fsm_t* this) {

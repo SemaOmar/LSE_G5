@@ -46,7 +46,9 @@
 
 // Distribucion de pines GPIO empleada para la reproducción de efectos
 // ATENCION: Valores a modificar por el alumno
-#define PLAYER_PWM_PIN 	0
+
+#define PLAYER_PWM_PIN 24 	//GPIO18
+#define NO_SONAR 0 		//frecuencia de 0Hz
 
 // Distribucion de pines GPIO empleada para el control de los servos
 // ATENCION: Valores a modificar por el alumno
@@ -55,22 +57,22 @@
 
 // FLAGS FSM CONTROL DE JUEGO Y TORRETA
 // ATENCION: Valores a modificar por el alumno
-#define FLAG_SYSTEM_START 		0x00
-#define FLAG_JOYSTICK_UP 		0x00
-#define FLAG_JOYSTICK_DOWN 		0x00
-#define FLAG_JOYSTICK_LEFT		0x00
-#define FLAG_JOYSTICK_RIGHT		0x00
-#define FLAG_TRIGGER_BUTTON		0x00
-#define FLAG_SHOOT_TIMEOUT		0x00
-#define FLAG_TARGET_DONE		0x00
-#define FLAG_SYSTEM_END			0x00
+#define FLAG_SYSTEM_START 		0x001
+#define FLAG_JOYSTICK_UP 		0x002
+#define FLAG_JOYSTICK_DOWN 		0x004
+#define FLAG_JOYSTICK_LEFT		0x008
+#define FLAG_JOYSTICK_RIGHT		0x010
+#define FLAG_TRIGGER_BUTTON		0x020
+#define FLAG_SHOOT_TIMEOUT		0x040
+#define FLAG_TARGET_DONE		0x080
+#define FLAG_SYSTEM_END			0x100
 
 // FLAGS FSM REPRODUCCION DE EFECTOS DE SONIDO
 // ATENCION: Valores a modificar por el alumno
-#define FLAG_START_DISPARO 		0x00
-#define FLAG_START_IMPACTO 		0x00
-#define FLAG_PLAYER_END			0x00
-#define FLAG_NOTA_TIMEOUT		0x00
+#define FLAG_START_DISPARO 		0x01
+#define FLAG_START_IMPACTO 		0x02
+#define FLAG_PLAYER_END			0x04
+#define FLAG_NOTA_TIMEOUT		0x08
 
 enum interruption_sources {
 	TARGET_ISR,
@@ -87,6 +89,7 @@ enum interruption_sources {
 
 extern int flags_system;
 extern int flags_player;
+extern int flags_juego;
 
 extern int frecuenciaDespacito[];
 extern int tiempoDespacito[];
