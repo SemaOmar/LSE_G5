@@ -44,20 +44,13 @@ int ConfiguraSistema (TipoSistema *p_sistema) {
 // la torreta, los efectos, etc.
 // igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) {
-<<<<<<< HEAD
+
 	int result = 0, pid_joystick = 0;
-
-	// A completar por el alumno...
-	// ...
-=======
-	int result = 0;
->>>>>>> dd71dd75447a38d11d0bb93bae31f9049aa7297d
 	wiringPiSetupGpio();
-
+	system();
 	// Lanzamos thread para exploracion del teclado convencional del PC
 	result = piThreadCreate (thread_explora_teclado_PC);
 	pid_joystick = piThreadCreate (thread_explora_joystick);
-
 	if (result != 0) {
 		printf ("Thread didn't start!!!\n");
 		return -1;
@@ -89,13 +82,7 @@ PI_THREAD (thread_explora_teclado_PC) {
 				// A completar por el alumno...
 				// ...
 				case 's':
-					// A completar por el alumno...
-					// ...
-					
 					/*
-						DUDA JOSE -> No se muy bien como funcionan las interrupciones, supongo que este hilo se encarga 
-						de monitorizar el teclado y activa un flag si detecata que se ha pulsado una tecla
-
 						Por ahora dos interrupciones:
 							Tecla S -> start -> inicia las maquinas de estado
 							Tecla Q -> quit  -> Finaliza mauqinas de estado, termina el programa
@@ -120,6 +107,18 @@ PI_THREAD (thread_explora_teclado_PC) {
 	}
 }
 PI_THREAT (thread_explora_joystick){
+	int fd;
+
+	// FIFO file path
+	char * myfifo = "/tmp/myfifo";
+
+	// Creating the named file(FIFO)
+	// mkfifo(<pathname>, <permission>)
+	//mkfifo(myfifo, 0666);
+
+	char arr1[20];
+	const int MAX_BUF = 20;
+	int bytesread = 0;
 	while(1)
 	{
 	// Open FIFO for Read only
@@ -127,6 +126,7 @@ PI_THREAT (thread_explora_joystick){
 	// Read from FIFO
 	if((bytesread = read( fd, arr1, MAX_BUF - 1)) > 0)
 	{
+		piLock (PLAYER_FLAGS_KEY);
 		arr1[bytesread] = '\0';
 		switch(arr1) {
 		case "up":
@@ -150,8 +150,8 @@ PI_THREAT (thread_explora_joystick){
 		default:
 			printf("INVALID KEY!!!\n");
 			break;
+			piUnlock (PLAYER_FLAGS_KEY);
 	}
-
 
 	}
 	close(fd);
