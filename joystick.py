@@ -1,14 +1,13 @@
+import os
 import time
 import socket
 from sense_hat import SenseHat
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-try:
-    s.connect((host, port))
-except Exception as e:
-    print("NO se ha conectado ",e)
-
 sense = SenseHat()
+path = "/tmp/myfifo"
+if not os.path.exists(path):
+    os.mkfifo(path)
+	
 tecla = " "
 while True:
     flag_enviar = 0
@@ -34,5 +33,9 @@ while True:
         flag_enviar = 1
         print(event.direction, event.action)
     if flag_enviar == 1:
-      print("enviar dato " + tecla)
+		fifo = open(path, "w")
+		tecla = tecla + "\n"
+		fifo.write(tecla)
+		print("se ha escrito en el fichero")
+		fifo.close()
     time.sleep(0.5)
