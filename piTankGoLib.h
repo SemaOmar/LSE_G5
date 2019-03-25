@@ -18,8 +18,8 @@
 // CLAVES PARA MUTEX
 // ATENCION: Valores a modificar por el alumno
 #define	SYSTEM_FLAGS_KEY	0
-#define	PLAYER_FLAGS_KEY	0
-#define	STD_IO_BUFFER_KEY	0
+#define	PLAYER_FLAGS_KEY	1
+#define	STD_IO_BUFFER_KEY	2
 
 // Distribucion de pines GPIO empleada para el teclado
 // ATENCION: Valores a modificar por el alumno
