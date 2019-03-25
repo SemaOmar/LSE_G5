@@ -1,6 +1,20 @@
 
 #include "torreta.h"
 
+#define SYSCLK 19200	//19.2MHz = 19200kHz
+#define DIVISOR 192 	//100kHz
+#define RANGO	2000	// 0 = OFF, T=2000=100%
+#define T 20		// T=20ms -> f=50Hz
+
+//Pin GPIO salida PWM
+#define GPIO18 18	//eje y
+#define GPIO19 19	//eje x
+
+//SERVOMOTOR
+#define INC 10		//Incremento cada vez que se pulsa una tecla
+#define P_MAX 200	//Pulso maximo 2ms -> p_max=RANGO*2/T=200 -> Torreta en 180º -> Podemos usar 100 intervalos del total de RANGO
+#define P_MIN 100	//Sin pulso, PWM off -> Torreta en 0º
+
 //------------------------------------------------------
 // PROCEDIMIENTOS DE INICIALIZACION DE LOS OBJETOS ESPECIFICOS
 //------------------------------------------------------
@@ -9,7 +23,8 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 	// A completar por el alumno...
 	int pos_ini = ((P_MAX-P_MIN)/2)+P_MIN; // Posicion inicial en el punto medio -> 90º
 
-	pinMode (GPIO19, PWM_OUTPUT);
+	pinMode(GPIO19, PWM_OUTPUT);
+	pinMode(GPIO18, PWM_OUTPUT);
 	pwmSetMode(PWM_MODE_MS);
 	pwmSetRange(RANGO);
 	pwmSetClock (DIVISOR);
@@ -19,12 +34,12 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 	p_torreta->posicion.x = pos_ini;
 	p_torreta->posicion.y = pos_ini;
 	p_torreta->servo_x.inicio = 0;
-	p_torreta->servo_x.incremento = 10;
+	p_torreta->servo_x.incremento = INC;
 	p_torreta->servo_x.minimo = P_MIN;
 	p_torreta->servo_x.maximo = P_MAX;
 
 	pwmWrite(GPIO19, p_torreta->posicion.x);
-	// ...
+	pwmWrite(GPIO18, p_torreta->posicion.y)
 	
 	
 	
@@ -36,114 +51,28 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
-	// A completar por el alumno
-	// ...
+
+	fprintf (stdout,"ESTADO --> START\n");
 	
-	/*
-		Si se aprieta cualquir boton, que empice a funcionar la torreta
-	*/
-	if (flags_system == FLAG_SYSTEM_START){
-		printf (stdout, "Recibida senal START"); 
-		flags_system &= ~FLAG_SYSTEM_START //Limpiamos flag
+	if (flags_juego & FLAG_SYSTEM_START){
+		printf ("Recibida senal START\n");
 		result = 1;
 	}
-
+	
 	return result;
 }
 
 int CompruebaJoystickUp (fsm_t* this) {
 	int result = 0;
-
-	// A completar por el alumno
-	// ...
 	
-	if (flags_juego == FLAG_JOYSTICK_UP){
-		printf (stdout, "Joystick -> UP");
-		result = 1;
-	}
+	/*TipoTorreta* p = (TipoTorreta*)(this->user_data);
 
-	return result;
-}
-
-int CompruebaJoystickDown (fsm_t* fsm_player){
-	int result = 0;
-
-	// A completar por el alumno
-	// ...
+    p-> */
 	
-	if (flags_juego == FLAG_JOYSTICK_DOWN){
-		printf (stdout, "Joystick -> Down");
-		result = 1;
-	}
-
-	return result;
-}
-
-int CompruebaJoystickLeft (fsm_t* this) {
-	int result = 0;
-
-	// A completar por el alumno
-	// ...
+	fprintf (stdout,"ESTADO --> WAIT\n");
 	
-	if (flags_juego == FLAG_JOYSTICK_LEFT){
-		printf (stdout, "Joystick -> Left");
-		result = 1;
-	}
-
-	return result;
-}
-
-int CompruebaJoystickRight (fsm_t* this) {
-	int result = 0;
-
-	// A completar por el alumno
-	// ...
-	
-	if (flags_juego == FLAG_JOYSTICK_RIGHT){
-		printf (stdout, "Joystick -> Right");
-		result = 1;
-	}
-
-	return result;
-}
-
-int CompruebaTimeoutDisparo (fsm_t* this) {
-	int result = 0;
-
-	// A completar por el alumno
-	// ...
-	
-	if (flags_juego == FLAG_SHOOT_TIMEOUT){
-		printf (stdout, "Timeout -> Disparo");
-		result = 1;
-	}
-
-	return result;
-}
-
-int CompruebaImpacto (fsm_t* this) {
-	int result = 0;
-
-	// A completar por el alumno
-	// ...
-	
-	if (flags_juego == FLAG_TARGET_DONE){
-		printf (stdout, "Impacto");
-		result = 1;
-	}
-
-
-	return result;
-}
-
-int CompruebaTriggerButton (fsm_t* this) {
-	int result = 0;
-
-	// A completar por el alumno
-	// ...
-	
-	if (flags_juego == FLAG_TRIGGER_BUTTON){
-		printf (stdout, "Joystick -> !Fuego!");
+	if (flags_juego & FLAG_JOYSTICK_UP){
+		fprintf (stdout, "Joystick -> UP\n");
 		result = 1;
 	}
 
@@ -153,15 +82,17 @@ int CompruebaTriggerButton (fsm_t* this) {
 int CompruebaFinalJuego (fsm_t* this) {
 	int result = 0;
 
-	// A completar por el alumno
-	// ...
-	
-	if (flags_system == FLAG_SYSTEM_END){
-		printf (stdout, "Fin");
+	if (flags_juego & FLAG_SYSTEM_END){
+		fprintf (stdout, "Recibida senal END\n");
 		result = 1;
 	}
 
 	return result;
+}
+
+int NoComprueboNada (fsm_t* this) {
+	fprintf (stdout, "\t\tNo compruebo nada\n");
+	return 1;
 }
 
 //------------------------------------------------------
