@@ -32,11 +32,16 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 			Establece la posicion inicial de la torreta
 		*/
 	p_torreta->posicion.x = pos_ini;
-	p_torreta->posicion.y = pos_ini;
-	p_torreta->servo_x.inicio = 0;
+	p_torreta->servo_x.inicio = pos_ini;
 	p_torreta->servo_x.incremento = INC;
 	p_torreta->servo_x.minimo = P_MIN;
 	p_torreta->servo_x.maximo = P_MAX;
+	
+	p_torreta->posicion.y = pos_ini;
+	p_torreta->servo_y.inicio = pos_ini;
+	p_torreta->servo_y.incremento = INC;
+	p_torreta->servo_y.minimo = P_MIN;
+	p_torreta->servo_y.maximo = P_MAX;
 
 	pwmWrite(GPIO19, p_torreta->posicion.x);
 	pwmWrite(GPIO18, p_torreta->posicion.y)
@@ -64,10 +69,6 @@ int CompruebaComienzo (fsm_t* this) {
 
 int CompruebaJoystickUp (fsm_t* this) {
 	int result = 0;
-	
-	/*TipoTorreta* p = (TipoTorreta*)(this->user_data);
-
-    p-> */
 	
 	fprintf (stdout,"ESTADO --> WAIT\n");
 	
@@ -103,22 +104,84 @@ void ComienzaSistema (fsm_t* this) {
 	// A completar por el alumno
 	// ...
 	
-	InicializaTorreta(sistema.torreta);
+	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
+	
+	fprintf (stdout, "Iniciando Torreta...\n");
+	flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
+	fprintf (stdout, "Torreta operativa\n");
 }
 
 void MueveTorretaArriba (fsm_t* this) {
 	// A completar por el alumno
 	// ...
+	
+	int y_next = 0;
+	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
+	
+	fprintf (stdout, "\t\tWAIT --> UP\n");
+	fprintf (stdout, "Accion -> Torreta UP\n");
+	
+	y_next = torreta->posicion.y + torreta->servo_y.incremento;
+	if (y_next <= torreta->servo_y.maximo) {
+		torreta->posicion.y = y_next;
+		pwmWrite(GPIO19, torreta->posicion.y);
+	}
+	else if(torreta->posicion.y < torreta->servo_y.maximo){
+		torreta->posicion.y = torreta->servo_y.maximo;
+		pwmWrite(GPIO19, torreta->posicion.y);
+	}
+	
+	flags_juego &= ~FLAG_JOYSTICK_UP;
 }
 
 void MueveTorretaAbajo (fsm_t* this) {
 	// A completar por el alumno
 	// ...
+	
+	int y_next = 0;
+	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
+	
+	fprintf (stdout, "\t\tWAIT --> DOWN\n");
+	fprintf (stdout, "Accion -> Torreta DOWN\n");
+	
+	y_next = torreta->posicion.y - torreta->servo_y.incremento;
+	if (y_next >= torreta->servo_y.minimo) {
+		torreta->posicion.y = y_next;
+		pwmWrite(GPIO19, torreta->posicion.y);
+	}
+	else if(torreta->posicion.y > torreta->servo_y.minimo){
+		torreta->posicion.y = torreta->servo_y.minimo;
+		pwmWrite(GPIO19, torreta->posicion.y);
+	}
+	
+	flags_juego &= ~FLAG_JOYSTICK_DOWN;
+	
 }
 
 void MueveTorretaIzquierda (fsm_t* this) {
 	// A completar por el alumno
 	// ...
+	
+	int x_next=0;
+	TipoTorreta* torreta = (TipoTorreta*)(this->user_data);
+	
+	fprintf (stdout, "\t\tWAIT --> UP\n");
+	fprintf (stdout, "Accion -> Torreta UP\n");
+	
+	x_next = torreta->posicion.x + torreta->servo_x.incremento;
+	if (x_next <= torreta->servo_x.maximo) {
+		torreta->posicion.x = x_next;
+		pwmWrite(GPIO19, torreta->posicion.x);
+	}
+	else if(torreta->posicion.y > torreta->servo_y.minimo){
+		torreta->posicion.y = torreta->servo_y.minimo;
+		pwmWrite(GPIO19, torreta->posicion.y);
+	}
+	
+	flags_juego &= ~FLAG_JOYSTICK_DOWN;
+	
+	flags_juego &= ~FLAG_JOYSTICK_UP;
+	
 }
 
 void MueveTorretaDerecha (fsm_t* this) {
