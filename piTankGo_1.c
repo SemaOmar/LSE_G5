@@ -45,9 +45,6 @@ int ConfiguraSistema (TipoSistema *p_sistema) {
 // igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) {
 	int result = 0;
-
-	// A completar por el alumno...
-	// ...
 	wiringPiSetupGpio();
 
 	// Lanzamos thread para exploracion del teclado convencional del PC
@@ -141,7 +138,6 @@ int main ()
 	};
 
 	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
-	// A completar por el alumno...
 
 	fsm_trans_t control_torreta [] = {
 			{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
@@ -161,12 +157,11 @@ int main ()
 		};
 
 	fsm_t* torreta_fsm = fsm_new (WAIT_START, control_torreta, &(sistema.torreta));
-	// ...
+
 	next = millis();
+
 	while (1) {
 		//fsm_fire (player_fsm);
-		// A completar por el alumno...
-		// ...
 		
 		fsm_fire (torreta_fsm);
 
