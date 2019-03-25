@@ -128,29 +128,12 @@ PI_THREAT (thread_explora_joystick){
 	{
 		piLock (PLAYER_FLAGS_KEY);
 		arr1[bytesread] = '\0';
-		switch(arr1) {
-		case "up":
-			flags_system |= FLAG_JOYSTICK_UP;
-			printf("Received: %s", arr1);
-			fflush(stdout);
-			break;
-		case "down":
-			flags_system |= FLAG_JOYSTICK_DOWN;
-			break;
-		case "right":
-			flags_system |= FLAG_JOYSTICK_RIGHT;
-			break;
-		case "left":
-			flags_system |= FLAG_JOYSTICK_LEFT;
-			break;
-		case "middle":
-			flags_system |= FLAG_TRIGGER_BUTTON;
-			break;
-
-		default:
-			printf("INVALID KEY!!!\n");
-			break;
-			piUnlock (PLAYER_FLAGS_KEY);
+		if (strcmp(arr1 , "up") == 0) {	flags_system |= FLAG_JOYSTICK_UP;}
+		if (strcmp(arr1 , "down") == 0) { flags_system |= FLAG_JOYSTICK_DOWN;}
+		if (strcmp(arr1 , "right") == 0) { flags_system |= FLAG_JOYSTICK_RIGHT;}
+		if (strcmp(arr1 , "left") == 0) { flags_system |= FLAG_JOYSTICK_LEFT;}
+		if (strcmp(arr1 , "middle") == 0) { flags_system |= FLAG_TRIGGER_BUTTON;}
+		piUnlock (PLAYER_FLAGS_KEY);
 	}
 
 	}
