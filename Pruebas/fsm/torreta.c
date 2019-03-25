@@ -28,12 +28,15 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 		Establece la posicion inicial de la torreta
 	*/
 	
+<<<<<<< HEAD
 	int pos_ini = ((P_MAX-P_MIN)/2)+P_MIN; // Posicion inicial en el punto medio -> 90º
+=======
+	int x_ini = ((P_MAX-P_MIN)/2)+P_MIN; // Posicion inicial en el punto medio -> 90º
+>>>>>>> 136648623dc368d8e231e185e95377ad264372e5
 	
-	wiringPiSetup ();
-	wiringPiSetupGpio();
+	//wiringPiSetupGpio();
 	
-	pinMode (GPIO18, PWM_OUTPUT);
+	pinMode (GPIO19, PWM_OUTPUT);
 	pwmSetMode(PWM_MODE_MS);
 	pwmSetRange(RANGO);
 	pwmSetClock (DIVISOR);
@@ -46,7 +49,7 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 	p_torreta->servo_x.maximo = P_MAX;
 	
 	pwmWrite(GPIO19, p_torreta->posicion.x);
-	
+	printf("Inicializado\n");
 }
 
 //------------------------------------------------------
@@ -61,12 +64,12 @@ int CompruebaComienzo (fsm_t* this) {
 	
 	fprintf (stdout,"ESTADO --> START\n");
 	
-	if ((flags_juego & FLAG_SYSTEM_START)==FLAG_SYSTEM_START){
+	if (flags_juego & FLAG_SYSTEM_START){
 		printf ("Recibida senal START\n");
 		result = 1;
 	}
 	
-	return result;
+	return result=1;
 }
 
 int CompruebaJoystickUp (fsm_t* this) {
@@ -81,12 +84,12 @@ int CompruebaJoystickUp (fsm_t* this) {
 	
 	fprintf (stdout,"ESTADO --> WAIT\n");
 	
-	if ((flags_juego & FLAG_JOYSTICK_UP)==FLAG_JOYSTICK_UP){
+	if (flags_juego & FLAG_JOYSTICK_UP){
 		fprintf (stdout, "Joystick -> UP\n");
 		result = 1;
 	}
 
-	return result;
+	return result=1;
 }
 
 int CompruebaFinalJuego (fsm_t* this) {
@@ -95,7 +98,7 @@ int CompruebaFinalJuego (fsm_t* this) {
 	// A completar por el alumno
 	// ...
 	
-	if ((flags_juego & FLAG_SYSTEM_END)==FLAG_SYSTEM_END){
+	if (flags_juego & FLAG_SYSTEM_END){
 		fprintf (stdout, "Recibida senal END\n");
 		flags_juego &= ~FLAG_SYSTEM_END;
 		result = 1;
@@ -121,33 +124,8 @@ void ComienzaSistema (fsm_t* this) {
 	
 	fprintf (stdout, "\t\tSTART --> WAIT\n");
 	fprintf (stdout, "Iniciando Torreta...\n");
-	//InicializaTorreta(torreta);
+	InicializaTorreta(torreta);
 	
-	// Hago lo mismo que la funcion InicializaTorreta para depurar --> BORRAR AL TERMINAR
-	//
-	// Esta es la seccion critica
-	//		-> Si la quito, funciona la FSM
-	//		-> Si la pongo, parece que todo se ejecuta correctamente y la PWM se configura, pero la FSM se queda bloqueada
-	
-				int x_ini = (P_MAX-P_MIN)/2+P_MIN; // Posicion inicial en el punto medio -> 90º
-				
-				//wiringPiSetup ();
-				wiringPiSetupGpio(); fprintf (stdout, "WiringPi configurada\n");
-				pinMode (GPIO19, PWM_OUTPUT); fprintf (stdout, "PWM GPIO19\n");
-				pwmSetMode(PWM_MODE_MS); fprintf (stdout, "PWM PWM_MODE_MS\n");
-				//pwmSetRange(RANGO); fprintf (stdout, "PWM RANGO\n");
-				//pwmSetClock (DIVISOR); fprintf (stdout, "PWM DIVISOR\n");
-				
-				torreta->posicion.x = x_ini;
-				torreta->posicion.y = 0;
-				torreta->servo_x.inicio = 0;
-				torreta->servo_x.incremento = 10;
-				torreta->servo_x.minimo = P_MIN;
-				torreta->servo_x.maximo = P_MAX;
-				
-				pwmWrite(GPIO19, torreta->posicion.x);  fprintf (stdout, "PWM Write\n");
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	flags_juego &= ~FLAG_SYSTEM_START; //Limpiamos flag
 	fprintf (stdout, "Torreta operativa\n");
